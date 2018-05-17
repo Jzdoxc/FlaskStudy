@@ -1,10 +1,19 @@
 <!-- 包含导航条的程序基模板 !-->
 {% extends "bootstrap/base.html" %}
+
+<!--  加入收藏夹图标 !-->
 {% block head %}
 {{super()}}
 <link rel="shortcut icon" href="{{ url_for('static', filename = 'favicon.ico') }}"     type="image/x-icon"> 
 <link rel="icon" href="{{ url_for('static', filename = 'favicon.ico') }}"     type="image/x-icon">
 {% endblock %}
+
+<!-- 引入 js文件 -->
+{% block scripts %}
+{{super()}}
+{{moment.include_moment()}}
+{% endblock %}
+
 {% block title %}Flasky{% endblock %}
 {% block navbar %}
 <div class="navbar navbar-inverse" role="navigation">
