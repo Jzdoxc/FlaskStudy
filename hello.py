@@ -5,7 +5,7 @@ from flask_wtf import Form
 from wtforms import StringField,SubmitField
 from wtforms.validators import Required
 from flask_sqlalchemy import SQLAlchemy
-
+from flask_script import Shell
 import os
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -67,6 +67,14 @@ def index():
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'),404
+
+def make_shell_context():
+    return dict(app=app,db=db,User=User,Role=Role)
+
+manager.add_command("shell",Shell(make_context=make_shell_context))
+
+
+
 
 
 if __name__=='__main__':
