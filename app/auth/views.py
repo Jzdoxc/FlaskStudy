@@ -26,6 +26,9 @@ def register():
     if form.validate_on_submit():
         user = User(email=form.email.data, username=form.username.data, password=form.password.data)
         db.session.add(user)
+        #注册后自动登陆
+        #db.session.commit()
+        #login_user(user)
         flash("你已经可以登陆了")
         return redirect(url_for('auth.login'))
     return render_template('auth/register.html', form=form)
