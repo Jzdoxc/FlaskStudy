@@ -8,8 +8,8 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'hard to guess string'
     # #邮箱
     FLASKY_MAIL_SUBJECT_PERFIX = '[Flasky]'
-    FLASK_MAIL_SENDER = 'Flasky Admin  <1487759857@qq.com>'
-    FLASK_ADMIN = os.environ.get('FLASKY_ADMIN') or '2581716503@qq.com'
+    FLASKY_MAIL_SENDER = 'Flasky Admin  <1487759857@qq.com>'
+    FLASKY_ADMIN = os.environ.get('FLASKY_ADMIN') or '2581716503@qq.com'
     # #数据库
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
