@@ -30,7 +30,7 @@ def register():
         token = user.generate_confirmation_token()
         send_email(user.email, 'Confirm Your Account',
                    'mail/new_user', user=user, token=token)
-        flash('A confirmation email has been sent to you by email.')
+        flash('注册邮箱确认邮件已发送至你的邮箱，请确认邮件.')
         return redirect(url_for('main.index'))
     return render_template('auth/register.html', form=form)
 
@@ -42,9 +42,9 @@ def confirm(token):
     if current_user.confirmed:
         return redirect(url_for('main.index'))
     if current_user.confirm(token):
-        flash('You have confirmed your account. Thanks!')
+        flash('你已经确认了你的邮箱，谢谢！')
     else:
-        flash('The confirmation link is invalid or has expired.')
+        flash('确认链接无效！.')
     return redirect(url_for('main.index'))
 
 
@@ -65,19 +65,18 @@ def unconfirmed():
 
 
 @auth.route('/confirm')
-@login_required
 def resend_confirmation():
     token = current_user.generate_confirmation_token()
     send_email(current_user.email,'Confirm Your Account',
                 'mail/new_user',user=current_user, token=token)
-    flash('A new confirmation email has been sent to you by email.')
+    flash('一封新的邮件已发送至您的邮箱')
     return redirect(url_for('main.index'))
 
 
 @auth.route('/secret')
 @login_required
 def secret():
-    return 'Only authenticated users are allowed'
+    return '登陆后才可以查看'
 
 
 @auth.route('/logout')

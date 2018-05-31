@@ -1,13 +1,12 @@
 Dear {{ user.username }},
 
-Welcome to Flasky!
+欢迎使用Flasky
 
-To confirm your account please click on the following link:
+为了确认你的账户，请先点击下方链接激活你的账户
 
 {{ url_for('auth.confirm', token=token, _external=True) }}
 
-Sincerely,
+亲爱的
 
 The Flasky Team
 
-Note: replies to this email address are not monitored.
