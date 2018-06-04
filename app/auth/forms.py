@@ -25,3 +25,9 @@ class RegistrationForm(Form):
     def validate_username(self,field):
         if User.query.filter_by(username=field.data).first():
             raise ValueError('该用户名已经被注册')
+			
+class ChangePasswordForm(Form):
+	old_password=PasswordField('Old Password', validators=[DataRequired()])
+	new_password=PasswordField('Password', validators=[DataRequired(),EqualTo('password2',message='两次密码必须一致')])
+	password2 = PasswordField('Confirm Password',validators=[DataRequired()])
+	submit = SubmitField('Update Password')
