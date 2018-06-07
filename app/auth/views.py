@@ -2,7 +2,8 @@ from flask import render_template, redirect, url_for, request, flash
 from flask_login import login_required, login_user, logout_user, current_user
 from . import auth
 from ..models import User, db
-from .forms import LoginForm, RegistrationForm, ChangePasswordForm, PasswordResetForm, PasswordResetRequesetForm
+from .forms import LoginForm, RegistrationForm, ChangePasswordForm, PasswordResetForm, PasswordResetRequesetForm, \
+    ChangeEmailForm
 from ..email import send_email
 
 
@@ -134,3 +135,29 @@ def password_reset(token, email):
         else:
             return redirect(url_for('main.index'))
     return render_template('auth/reset-password.html', form=form)
+
+
+@auth.route('/change-email', methods=['GET', 'POST'])
+@login_required
+def change_email_request():
+    form = ChangeEmailForm()
+    if form.validate_on_submit():
+        if current_user.verify_password(form.password.data):
+            token = current_user.generate_change_email_token(form.email.data)
+            send_email(form.email.data, 'Change Email', 'auth/email/change_email', token=token, user=current_user,
+                       next=request.args.get('next'))
+            flash("一封重置邮箱的邮件已发送至您的邮箱")
+            return redirect(url_for('main.index'))
+        else:
+            flash("无效的邮箱或密码")
+    return render_template('auth/change_email.html', form=form)
+
+
+@auth.route('/change-email/<token>')
+@login_required
+def change_email(token):
+    if current_user.change_email(token):
+        flash("你的邮箱已经更改成功")
+    else:
+        flash("无效请求")
+    return redirect(url_for('main.index'))
