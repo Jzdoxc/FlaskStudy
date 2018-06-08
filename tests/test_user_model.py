@@ -1,7 +1,28 @@
 import unittest
-from app.models import User, db
+
+from flask import current_app
+
+from app import create_app
+from app.models import User, db, Role, Permission, AnonymousUser
+
 
 class UserModelTestCase(unittest.TestCase):
+    def setUp(self):
+        self.app = create_app('testing')
+        self.app_context = self.app.app_context()
+        self.app_context.push()
+        db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+        self.app_context.pop()
+
+    def test_app_exists(self):
+        self.assertFalse(current_app is None)
+
+    def test_app_testing(self):
+        self.assertTrue(current_app.config['TESTING'])
     def test_password_setter(self):
         u = User(password='cat')
         self.assertTrue(u.password_hash is not None)
@@ -29,7 +50,6 @@ class UserModelTestCase(unittest.TestCase):
         self.assertTrue(u.reset_password(token, 'dog'))
         self.assertTrue(u.verify_password('dog'))
 
-
     def test_invalid_reset_token(self):
         u1 = User(password='cat')
         u2 = User(password='dog')
@@ -39,3 +59,13 @@ class UserModelTestCase(unittest.TestCase):
         token = u1.generate_reset_token()
         self.assertFalse(u2.reset_password(token, 'horse'))
         self.assertTrue(u2.verify_password('dog'))
+
+    def test_roles_and_permissions(self):
+        Role.insert_roles()
+        u = User(email='john@example.com', password='cat')
+        self.assertTrue(u.can(Permission.WRITE_ARTICLES))
+        self.assertFalse(u.can(Permission.MODERATE_COMMENTS))
+
+    def test_anonymous_user(self):
+        u = AnonymousUser()
+        self.assertFalse(u.can(Permission.FOLLOW))
