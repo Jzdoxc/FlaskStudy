@@ -1,13 +1,9 @@
-from flask import session, redirect, url_for, render_template, current_app
-from app.decorators import admin_required, permission_required
-from flask_login import login_required
-
-from ..models import User, Permission
-from .. import db
-from . import main
 from datetime import datetime
-from .forms import NameForm
-from ..email import send_email
+from flask import session, render_template, abort
+from flask_login import login_required
+from app.decorators import admin_required, permission_required
+from . import main
+from ..models import User, Permission
 
 
 @main.route('/', methods=['GET', 'POST'])
@@ -41,3 +37,12 @@ def for_admin_only():
 @permission_required(Permission.MODERATE_COMMENTS)
 def for_moderators_only():
     return "For comment moderators"
+
+
+@main.route('/user/<username>')
+@login_required
+def user(username):
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        abort(404)
+    return render_template('user.html', user=user)

@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, request, flash
+from flask import render_template, redirect, url_for, request, flash, abort
 from flask_login import login_required, login_user, logout_user, current_user
 from . import auth
 from ..models import User, db
@@ -52,6 +52,7 @@ def confirm(token):
 @auth.before_app_request
 def before_request():
     if current_user.is_authenticated:
+        current_user.ping()
         if not current_user.confirmed \
                 and request.endpoint \
                 and request.blueprint != 'auth' \
@@ -131,7 +132,7 @@ def password_reset(token, email):
             return redirect(url_for('main.index'))
         if user.reset_password(token, form.password.data):
             flash("你的密码已经更新了")
-            return redirect(url_for('auth/login'))
+            return redirect(url_for('auth.login'))
         else:
             return redirect(url_for('main.index'))
     return render_template('auth/reset-password.html', form=form)
@@ -161,3 +162,5 @@ def change_email(token):
     else:
         flash("无效请求")
     return redirect(url_for('main.index'))
+
+
