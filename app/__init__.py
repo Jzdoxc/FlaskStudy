@@ -5,7 +5,7 @@ from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from config import config
-
+from flask_pagedown import PageDown
 login_manager = LoginManager()
 login_manager.session_protection = 'strong'
 login_manager.login_view = 'auth.login'
@@ -13,7 +13,7 @@ moment = Moment()
 bootstrap = Bootstrap()
 db = SQLAlchemy()
 mail = Mail()
-
+pagedown = PageDown()
 
 def create_app(config_name):
     app = Flask(__name__)
@@ -26,7 +26,7 @@ def create_app(config_name):
     db.init_app(app)
     moment.init_app(app)
     login_manager.init_app(app)
-
+    pagedown.init_app(app)
     # 附加路由和自定义错误的界面
 
     # ...
