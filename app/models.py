@@ -116,6 +116,11 @@ class User(UserMixin, db.Model):
                                cascade='all,delete-orphan')
 
 
+    @property
+    def followed_posts(self):
+        #db.session.query(Post).select_from(Follow).filter_by(follower_id=self.id).join(Follow,Followed_id==Post.author_id)
+        return Post.query.join(Follow,Follow.followed_id == Post.author_id).filter(Follow.follower_id == self.id)
+
     def follow(self,user):
         if not self.is_following(user):
             f=Follow(follower=self,followed=user)
