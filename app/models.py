@@ -115,6 +115,17 @@ class User(UserMixin, db.Model):
                                lazy='dynamic',
                                cascade='all,delete-orphan')
 
+    def __init__(self, **kwargs):
+        super(User, self).__init__(**kwargs)
+        if self.role is None:
+            if self.email == current_app.config['FLASKY_ADMIN']:
+                self.role = Role.query.filter_by(permissions=0xff).first()
+            if self.role is None:
+                self.role = Role.query.filter_by(default=True).first()
+        if self.email is not None:
+            self.avatar_hash = hashlib.md5(self.email.encode('utf-8')).hexdigest()
+        self.follow(self)
+
 
     @property
     def followed_posts(self):
@@ -137,19 +148,17 @@ class User(UserMixin, db.Model):
     def is_followed_by(self, user):
         return self.followers.filter_by(follower_id=user.id).first() is not None
 
-    def __init__(self, **kwargs):
-        super(User, self).__init__(**kwargs)
-        if self.role is None:
-            if self.email == current_app.config['FLASKY_ADMIN']:
-                self.role = Role.query.filter_by(permissions=0xff).first()
-            if self.role is None:
-                self.role = Role.query.filter_by(default=True).first()
-        if self.email is not None:
-            self.avatar_hash = hashlib.md5(self.email.encode('utf-8')).hexdigest()
-
     def __repr__(self):
         return '<User %r>' % self.username
 
+
+    @staticmethod
+    def add_self_follows():
+        for user in User.query.all():
+            if not user.is_following(user):
+                user.follow(user)
+                db.session.add(user)
+                db.session.commit()
 
     @staticmethod
     def generate_fake(count=100):
