@@ -15,7 +15,7 @@ class Config:
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
                               'sqlite:///' + os.path.join(basedir, 'data.sqlite')
-
+    FLASKY_COMMENTS_PER_PAGE = 30
     @staticmethod
     def init_app(app):
         pass
