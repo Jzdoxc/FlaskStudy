@@ -1,17 +1,17 @@
 from flask_wtf import Form, FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
-from wtforms.validators import Required, Length, Email, DataRequired, Regexp, EqualTo, ValidationError
+from wtforms.validators import  Length, Email, DataRequired, Regexp, EqualTo
 from ..models import User
 
 
-class LoginForm(Form):
+class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Length(1, 64), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     remember_me = BooleanField('Keep me logged in')
     submit = SubmitField('Log In')
 
 
-class RegistrationForm(Form):
+class RegistrationForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Length(1, 64), Email()])
     username = StringField('Username', validators=[DataRequired(), Length(1, 64),
                                                    Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0, '用户名必须包含数字，字母，或下划线')])
@@ -28,7 +28,7 @@ class RegistrationForm(Form):
             raise ValueError('该用户名已经被注册')
 
 
-class ChangePasswordForm(Form):
+class ChangePasswordForm(FlaskForm):
     old_password = PasswordField('Old Password', validators=[DataRequired()])
     new_password = PasswordField('Password', validators=[DataRequired(), EqualTo('password2', message='两次密码必须一致')])
     password2 = PasswordField('Confirm Password', validators=[DataRequired()])
